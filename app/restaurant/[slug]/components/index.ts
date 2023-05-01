@@ -7,3 +7,5 @@ export { default as Images } from "./Images";
 export { default as Reviews } from "./Reviews";
 export { default as ReviewCard } from "./ReviewCard";
 export { default as ReservationCard } from "./ReservationCard";
+export { default as Menu } from "./Menu";
+export { default as MenuCard } from "./MenuCard";

@@ -30,15 +30,19 @@ export default async function handler(
 
   const indianCuisineId =
     cuisines.find((cuisine) => cuisine.name === "indian")?.id || 1;
+
   const mexicanCuisineId =
     cuisines.find((cuisine) => cuisine.name === "mexican")?.id || 1;
+
   const italianCuisineId =
     cuisines.find((cuisine) => cuisine.name === "italian")?.id || 1;
 
   const ottawaLocationId =
     locations.find((location) => location.name === "ottawa")?.id || 1;
+
   const torontoLocationId =
     locations.find((location) => location.name === "toronto")?.id || 1;
+
   const niagaraLocationId =
     locations.find((location) => location.name === "niagara")?.id || 1;
 

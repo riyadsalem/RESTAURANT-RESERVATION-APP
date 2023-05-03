@@ -10,3 +10,6 @@ export default function Home() {
     </main>
   );
 }
+
+// SELECT * FROM restaurant WHERE id = 4 // SQL Query
+// Prisma.restuant.findUnique(4) // Prisma Query

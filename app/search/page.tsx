@@ -17,12 +17,53 @@ export interface Restaurant {
 export interface SearchParams {
   city?: string;
   cuisine?: string;
-  price: PRICE;
+  price?: PRICE;
+}
+
+type Name = {
+  name: {
+    equals: string;
+  };
+};
+
+interface Where {
+  location?: Name;
+  cuisine?: Name;
+  price?: {
+    equals: PRICE;
+  };
 }
 
 const fetchRestaurantByCity = (
-  city: string | undefined
+  searchParams: SearchParams
 ): Promise<Restaurant[] | []> => {
+  const where: Where = {};
+
+  if (searchParams.city) {
+    const location = {
+      name: {
+        equals: searchParams.city.toLowerCase(),
+      },
+    };
+    where.location = location;
+  }
+
+  if (searchParams.cuisine) {
+    const cuisine = {
+      name: {
+        equals: searchParams.cuisine.toLowerCase(),
+      },
+    };
+    where.cuisine = cuisine;
+  }
+
+  if (searchParams.price) {
+    const price = {
+      equals: searchParams.price,
+    };
+    where.price = price;
+  }
+
   const select = {
     id: true,
     name: true,
@@ -33,16 +74,8 @@ const fetchRestaurantByCity = (
     slug: true,
   };
 
-  if (!city) return prisma.restaurant.findMany({ select });
-
   return prisma.restaurant.findMany({
-    where: {
-      location: {
-        name: {
-          equals: city.toLocaleLowerCase(),
-        },
-      },
-    },
+    where,
     select,
   });
 };
@@ -60,7 +93,7 @@ export default async function Search({
 }: {
   searchParams: SearchParams;
 }) {
-  const restaurants = await fetchRestaurantByCity(searchParams.city);
+  const restaurants = await fetchRestaurantByCity(searchParams);
   const location = await fetchLocations();
   const cuisine = await fetchCuisines();
 
@@ -76,7 +109,7 @@ export default async function Search({
         <div className="w-5/6">
           {restaurants.length ? (
             restaurants.map((restaurant) => (
-              <RestaurantCard key={restaurant.id} restaurant={restaurant} />
+              <RestaurantCard restaurant={restaurant} key={restaurant.id} />
             ))
           ) : (
             <p>Sorry, we found no restaurants in this area</p>

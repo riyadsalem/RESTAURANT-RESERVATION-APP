@@ -14,6 +14,12 @@ export interface Restaurant {
   slug: string;
 }
 
+export interface SearchParams {
+  city?: string;
+  cuisine?: string;
+  price: PRICE;
+}
+
 const fetchRestaurantByCity = (
   city: string | undefined
 ): Promise<Restaurant[] | []> => {
@@ -52,7 +58,7 @@ const fetchCuisines = async (): Promise<Cuisine[]> => {
 export default async function Search({
   searchParams,
 }: {
-  searchParams: { city: string };
+  searchParams: SearchParams;
 }) {
   const restaurants = await fetchRestaurantByCity(searchParams.city);
   const location = await fetchLocations();
@@ -62,7 +68,11 @@ export default async function Search({
     <>
       <Header search="search" />
       <div className="flex py-4 m-auto w-2/3 justify-between items-start">
-        <SearchSideBar locations={location} cuisines={cuisine} />
+        <SearchSideBar
+          locations={location}
+          cuisines={cuisine}
+          searchParams={searchParams}
+        />
         <div className="w-5/6">
           {restaurants.length ? (
             restaurants.map((restaurant) => (

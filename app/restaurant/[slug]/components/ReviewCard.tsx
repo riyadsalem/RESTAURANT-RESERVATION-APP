@@ -1,23 +1,9 @@
 import { Review } from "@prisma/client";
 import { FC, ReactElement } from "react";
+import { Stars } from "../../../components";
 
 const ReviewCard: FC<{ review: Review }> = ({ review }): ReactElement => {
   const { first_name, last_name, text, rating } = review;
-
-  const Rating = () => {
-    switch (rating) {
-      case 1:
-        return "*";
-      case 2:
-        return "**";
-      case 3:
-        return "***";
-      case 4:
-        return "****";
-      default:
-        return "*****";
-    }
-  };
 
   return (
     <div className="border-b pb-7 mb-7">
@@ -35,7 +21,9 @@ const ReviewCard: FC<{ review: Review }> = ({ review }): ReactElement => {
         </div>
         <div className="ml-10 w-5/6">
           <div className="flex items-center">
-            <div className="flex mr-5">{Rating()}</div>
+            <div className="flex mr-5">
+              <Stars rating={rating} reviews={[]} />
+            </div>
           </div>
           <div className="mt-5">
             <p className="text-lg font-light">{text}</p>

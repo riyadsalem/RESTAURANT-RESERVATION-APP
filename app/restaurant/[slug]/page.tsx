@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import {
   Description,
   Images,
@@ -37,7 +38,8 @@ const fetchRestaurantBySlug = async (slug: string): Promise<Restaurant> => {
   });
 
   if (!restaurant) {
-    throw new Error();
+    // throw new Error("Cannot find restaurant");
+    notFound();
   }
 
   return restaurant;

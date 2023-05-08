@@ -6,7 +6,7 @@ import * as jose from "jose";
 
 const prisma = new PrismaClient();
 
-interface Response {
+export interface Response {
   firstName?: string;
   lastName?: string;
   email?: string;

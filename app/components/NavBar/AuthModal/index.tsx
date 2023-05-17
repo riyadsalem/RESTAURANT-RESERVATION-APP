@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import AuthModalInputs from "./AuthModalInputs";
 import useAuth from "../../../../hooks/useAuth";
+import { AuthenticationContext } from "../../../context/AuthContext";
 
 const style = {
   position: "absolute" as "absolute",
@@ -30,8 +31,8 @@ export default function AuthModal({ isSignin }: { isSignin: boolean }) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
   const { signin, signup } = useAuth();
+  const { loading, data, error } = useContext(AuthenticationContext);
 
   const renderContent = (signinContent: string, signupContent: string) => {
     return isSignin ? signinContent : signupContent;
@@ -94,6 +95,7 @@ export default function AuthModal({ isSignin }: { isSignin: boolean }) {
       >
         {renderContent("Sign in", "Sign up")}
       </button>
+      <h1>{error}</h1>
 
       <Modal
         open={open}

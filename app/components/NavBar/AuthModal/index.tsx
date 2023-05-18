@@ -81,7 +81,7 @@ export default function AuthModal({ isSignin }: { isSignin: boolean }) {
     if (isSignin) {
       signin({ email: inputs.email, password: inputs.password }, handleClose);
     } else {
-      signup();
+      signup(inputs, handleClose);
     }
   };
 

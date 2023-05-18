@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, createContext } from "react";
+import axios from "axios";
+import { getCookie } from "cookies-next";
+import { useState, createContext, useEffect } from "react";
 
 interface User {
   id: number;

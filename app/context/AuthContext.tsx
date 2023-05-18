@@ -25,7 +25,7 @@ interface AuthState extends State {
 
 export const AuthenticationContext = createContext<AuthState>({
   loading: false,
-  error: "",
+  error: null,
   data: null,
   setAuthState: () => {},
 });
@@ -36,12 +36,12 @@ export default function AuthContext({
   children: React.ReactNode;
 }) {
   const [authState, setAuthState] = useState<State>({
-    loading: false,
+    loading: true,
     data: null,
     error: null,
   });
 
-  const fetchUser = async (): Promise<void> => {
+  const fetchUser = async () => {
     setAuthState({
       data: null,
       error: null,

@@ -111,7 +111,6 @@ export default async function handler(
         const timeIsBeforeClosingHour =
           new Date(`${day}T${availability.time}`) <=
           new Date(`${day}T${restaurant.close_time}`);
-
         return timeIsAfterOpeningHour && timeIsBeforeClosingHour;
       });
 

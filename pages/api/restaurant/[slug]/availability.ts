@@ -85,6 +85,15 @@ export default async function handler(
       };
     });
 
+    searchTimesWithTables.forEach((t) => {
+      t.tables = t.tables.filter((table) => {
+        if (bookingTablesObj[t.date.toISOString()]) {
+          if (bookingTablesObj[t.date.toISOString()][table.id]) return false;
+        }
+        return true;
+      });
+    });
+
     res.status(200).json({ searchTimesWithTables });
   }
 }

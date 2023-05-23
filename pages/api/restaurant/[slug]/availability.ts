@@ -76,7 +76,6 @@ export default async function handler(
     }
 
     const tables = restaurant.tables;
-
     const searchTimesWithTables = searchTimes.map((searchTime) => {
       return {
         date: new Date(`${day}T${searchTime}`),

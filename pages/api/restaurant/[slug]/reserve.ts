@@ -25,8 +25,6 @@ export default async function handler(
       bookerRequest,
     } = req.body;
 
-    // Validate the restaurant exists and that the day is within the opening hours
-
     const restaurant = await prisma.restaurant.findUnique({
       where: {
         slug,
@@ -54,7 +52,6 @@ export default async function handler(
       });
     }
 
-    // Determine all available tables based on that datetime and partySize
     const searchTimesWithTables = await findAvailabileTables({
       day,
       time,
@@ -62,7 +59,13 @@ export default async function handler(
       restaurant,
     });
 
-    const searchTimeWithTables = searchTimesWithTables?.find((t) => {
+    if (!searchTimesWithTables) {
+      return res.status(400).json({
+        errorMessage: "Invalid data provided",
+      });
+    }
+
+    const searchTimeWithTables = searchTimesWithTables.find((t) => {
       return t.date.toISOString() === new Date(`${day}T${time}`).toISOString();
     });
 
@@ -72,7 +75,6 @@ export default async function handler(
       });
     }
 
-    // Count The Tables Based on Seats
     const tablesCount: {
       2: number[];
       4: number[];
@@ -81,7 +83,7 @@ export default async function handler(
       4: [],
     };
 
-    searchTimeWithTables.tables?.forEach((table) => {
+    searchTimeWithTables.tables.forEach((table) => {
       if (table.seats === 2) {
         tablesCount[2].push(table.id);
       } else {
@@ -89,7 +91,6 @@ export default async function handler(
       }
     });
 
-    // Determine the tables to book which leads to the least number of seats used up
     const tablesToBooks: number[] = [];
     let seatsRemaining = parseInt(partySize);
 
@@ -117,13 +118,33 @@ export default async function handler(
       }
     }
 
-    res.status(200).json({
-      Message: "Not Found Error",
-      searchTimeWithTables,
-      tablesCount,
-      tablesToBooks,
+    const booking = await prisma.booking.create({
+      data: {
+        number_of_people: parseInt(partySize),
+        booking_time: new Date(`${day}T${time}`),
+        booker_email: bookerEmail,
+        booker_phone: bookerPhone,
+        booker_first_name: bookerFirstName,
+        booker_last_name: bookerLastName,
+        booker_occasion: bookerOccasion,
+        booker_request: bookerRequest,
+        restaurant_id: restaurant.id,
+      },
     });
+
+    const bookingsOnTablesData = tablesToBooks.map((table_id) => {
+      return {
+        table_id,
+        booking_id: booking.id,
+      };
+    });
+
+    await prisma.bookingsOnTables.createMany({
+      data: bookingsOnTablesData,
+    });
+
+    return res.json(booking);
   }
 }
 
-// http://localhost:3000/api/restaurant/vivaan-fine-indian-cuisine-ottawa/reserve?partySize=4&day=2023-03-02&time=14:00:00.000Z
+// http://localhost:3000/api/restaurant/vivaan-fine-indian-cuisine-ottawa/reserve?day=2023-02-03&time=15:00:00.000Z&partySize=8

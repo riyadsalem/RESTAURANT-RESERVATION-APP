@@ -1,4 +1,8 @@
+import { PrismaClient } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
+import { findAvailabileTables } from "../../../../services/restaurant/findAvailableTables";
+
+const prisma = new PrismaClient();
 
 export default async function handler(
   req: NextApiRequest,
@@ -21,7 +25,38 @@ export default async function handler(
       bookerRequest,
     } = req.body;
 
-    res.status(200).json({ information: { slug, day, time, partySize } });
+    // Validate the restaurant exists and that the day is within the opening hours
+
+    const restaurant = await prisma.restaurant.findUnique({
+      where: {
+        slug,
+      },
+      select: {
+        tables: true,
+        open_time: true,
+        close_time: true,
+        id: true,
+      },
+    });
+
+    if (!restaurant) {
+      return res.status(400).json({
+        errorMessage: "Restaurant not found",
+      });
+    }
+
+    if (
+      new Date(`${day}T${time}`) < new Date(`${day}T${restaurant.open_time}`) ||
+      new Date(`${day}T${time}`) > new Date(`${day}T${restaurant.close_time}`)
+    ) {
+      return res.status(400).json({
+        errorMessage: "Restaurant is not open at that time",
+      });
+    }
+
+    // Determine all available tables based on that datetime and partySize
+
+    res.status(200).json({ Message: "Not Found Error" });
   }
 }
 
